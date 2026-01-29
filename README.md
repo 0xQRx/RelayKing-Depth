@@ -6,7 +6,7 @@
 **RelayKing** is a comprehensive relay detection and enumeration tool designed to identify relay attack opportunities in Active Directory environments. Actual reporting options. Comprehensive attack coverage. Find the hidden relay vectors and report in your favorite output format. Feed Impacket's ntlmrelayx.py a curated target list of detected, relay-able hosts. Never miss a critical, exploitable NTLM relay path in the domain again.
 
 ## Blog/Recommended Reading:
-See the associated blog released on the Depth Security website for more details: https://depthsecurity.com/PLACEHOLDER_BLOG_URL
+See the associated blog released on the Depth Security website for more details: https://www.depthsecurity.com/blog/introducing-relayking-relay-to-royalty/
 
 ## Table of Contents
 - [Blog/Recommended Reading](#blogrecommended-reading)
