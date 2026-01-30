@@ -228,8 +228,29 @@ class TargetParser:
                     # since ldap3's Kerberos support is complex to set up
                     conn = impacket_conn
                     use_impacket = True
+                elif self.config.nthash:
+                    # Use impacket for NTLM pass-the-hash authentication
+                    # ldap3 doesn't support pass-the-hash natively, so we use impacket
+                    from impacket.ldap import ldap as ldap_impacket
+
+                    print("[*] Using NTLM pass-the-hash authentication for AD enumeration...")
+
+                    ldap_url = f"{'ldaps' if self.config.use_ldaps else 'ldap'}://{dc_ip}"
+                    impacket_conn = ldap_impacket.LDAPConnection(url=ldap_url, baseDN=self.config.domain, dstIp=dc_ip)
+
+                    # NTLM login with hash via impacket
+                    impacket_conn.login(
+                        user=self.config.username,
+                        password='',
+                        domain=self.config.domain,
+                        lmhash=self.config.lmhash or '',
+                        nthash=self.config.nthash
+                    )
+
+                    conn = impacket_conn
+                    use_impacket = True
                 else:
-                    # Use ldap3 library for simpler LDAP queries with NTLM
+                    # Use ldap3 library for simpler LDAP queries with NTLM (password auth)
                     from ldap3 import Server, Connection, NTLM, ALL, SUBTREE
 
                     server = Server(dc_ip, port=ldap_port, use_ssl=self.config.use_ldaps, get_info=ALL)
@@ -264,7 +285,8 @@ class TargetParser:
                             import traceback
                             traceback.print_exc()
                 elif use_impacket and not self.config.null_auth:
-                    print("[*] Tier-0 asset detection not yet supported with Kerberos auth")
+                    auth_type = "Kerberos" if self.config.use_kerberos else "pass-the-hash"
+                    print(f"[*] Tier-0 asset detection not yet supported with {auth_type} auth")
 
                 # Search for enabled computer objects only
                 # userAccountControl flag 0x0002 = ACCOUNTDISABLE
@@ -273,10 +295,11 @@ class TargetParser:
                 hostnames_seen = set()  # Track seen hostnames for deduplication
 
                 if use_impacket:
-                    # Use impacket's search method for Kerberos
+                    # Use impacket's search method (for Kerberos or pass-the-hash)
                     from impacket.ldap import ldapasn1 as ldapasn1_impacket
 
-                    print("[*] Retrieving computers via Kerberos LDAP...")
+                    auth_method = "Kerberos" if self.config.use_kerberos else "NTLM"
+                    print(f"[*] Retrieving computers via {auth_method} LDAP...")
                     search_filter = '(&(objectClass=computer)(!(userAccountControl:1.2.840.113556.1.4.803:=2)))'
 
                     try:
