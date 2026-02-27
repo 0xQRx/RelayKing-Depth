@@ -20,6 +20,7 @@ setup(
     url="https://github.com/yourusername/relayking",
     packages=find_packages(),
     py_modules=["relayking"],
+    include_package_data=True,
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Information Technology",
