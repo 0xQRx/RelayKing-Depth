@@ -206,9 +206,18 @@ class TargetParser:
                     else:
                         print("[*] Using Kerberos authentication for AD enumeration...")
 
-                    # Use domain FQDN in URL so impacket builds correct SPN (ldap/<fqdn>)
-                    # Pass dc_ip as dstIp so the actual TCP connection goes to the right IP
-                    ldap_url = f"{'ldaps' if self.config.use_ldaps else 'ldap'}://{self.config.domain}"
+                    # Resolve DC IP to FQDN for correct Kerberos SPN (ldap/<dc-fqdn>)
+                    # Using the domain name as SPN fails because the DC expects its own hostname
+                    dc_fqdn = None
+                    try:
+                        dc_fqdn = socket.getfqdn(socket.gethostbyaddr(dc_ip)[0])
+                        if self.config.verbose >= 2:
+                            print(f"[*] Resolved DC FQDN: {dc_fqdn}")
+                    except socket.herror:
+                        pass
+                    # Fallback to domain name if reverse DNS fails
+                    ldap_host = dc_fqdn or self.config.domain
+                    ldap_url = f"{'ldaps' if self.config.use_ldaps else 'ldap'}://{ldap_host}"
                     impacket_conn = ldap_impacket.LDAPConnection(url=ldap_url, baseDN=self.config.domain, dstIp=dc_ip)
 
                     # Kerberos login via impacket
