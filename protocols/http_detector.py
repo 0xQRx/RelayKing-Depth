@@ -300,7 +300,7 @@ class HTTPDetector(BaseDetector):
         scheme = 'https' if use_ssl else 'http'
 
         # Load wordlist
-        wordlist_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'web_ntlm_paths.dict')
+        wordlist_path = os.path.join(os.path.dirname(__file__), 'web_ntlm_paths.dict')
 
         if not os.path.exists(wordlist_path):
             if self._is_verbose(1):

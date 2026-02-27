@@ -20,7 +20,7 @@ setup(
     url="https://github.com/yourusername/relayking",
     packages=find_packages(),
     py_modules=["relayking"],
-    include_package_data=True,
+    package_data={"protocols": ["web_ntlm_paths.dict"]},
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Information Technology",
