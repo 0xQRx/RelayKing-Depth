@@ -19,6 +19,7 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/yourusername/relayking",
     packages=find_packages(),
+    py_modules=["relayking"],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Information Technology",
