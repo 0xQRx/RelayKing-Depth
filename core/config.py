@@ -243,8 +243,9 @@ Examples:
 
     # Validate arguments
     if not args.null_auth:
-        if not args.username:
-            parser.error('Username (-u) is required unless using --null-auth')
+        # Allow skipping username when using Kerberos with ccache
+        if not args.username and not (args.kerberos and args.no_pass):
+            parser.error('Username (-u) is required unless using --null-auth or -k/--kerberos with --no-pass (ccache)')
         # Allow --no-pass with --kerberos (uses ccache), or with --aesKey
         if not args.password and not args.hashes and not args.aesKey:
             if not (args.kerberos and args.no_pass):

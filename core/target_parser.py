@@ -206,7 +206,9 @@ class TargetParser:
                     else:
                         print("[*] Using Kerberos authentication for AD enumeration...")
 
-                    ldap_url = f"{'ldaps' if self.config.use_ldaps else 'ldap'}://{dc_ip}"
+                    # Use domain FQDN in URL so impacket builds correct SPN (ldap/<fqdn>)
+                    # Pass dc_ip as dstIp so the actual TCP connection goes to the right IP
+                    ldap_url = f"{'ldaps' if self.config.use_ldaps else 'ldap'}://{self.config.domain}"
                     impacket_conn = ldap_impacket.LDAPConnection(url=ldap_url, baseDN=self.config.domain, dstIp=dc_ip)
 
                     # Kerberos login via impacket
@@ -214,7 +216,7 @@ class TargetParser:
                     # Domain should be uppercase for Kerberos realm matching
                     krb_domain = self.config.domain.upper() if self.config.domain else ''
                     impacket_conn.kerberosLogin(
-                        user=self.config.username,
+                        user=self.config.username or '',
                         password=self.config.password or '',
                         domain=krb_domain,
                         lmhash=self.config.lmhash or '',
