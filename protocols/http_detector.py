@@ -315,8 +315,8 @@ class HTTPDetector(BaseDetector):
 
         ntlm_paths = []
 
-        # Use thread pool for concurrent path checking (20 threads for speed)
-        with ThreadPoolExecutor(max_workers=20) as executor:
+        # Use thread pool for concurrent path checking
+        with ThreadPoolExecutor(max_workers=self.config.http_threads) as executor:
             future_to_path = {
                 executor.submit(self._check_path_for_ntlm, host, port, scheme, path): path
                 for path in paths

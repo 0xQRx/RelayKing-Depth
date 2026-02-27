@@ -133,7 +133,7 @@ class RelayKingScanner:
                     protocols_for_portscan.append('https')
 
             # First pass: scan all targets for base protocols
-            port_scan_results = port_scanner.scan_hosts(targets, protocols_for_portscan, threads=50)
+            port_scan_results = port_scanner.scan_hosts(targets, protocols_for_portscan, threads=self.config.threads)
 
             # Count open ports
             total_open = sum(len(ports) for ports in port_scan_results.values())

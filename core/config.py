@@ -52,6 +52,7 @@ class RelayKingConfig:
 
     # Performance
     threads: int = 10
+    http_threads: Optional[int] = None
     timeout: int = 5
 
     # Set of DC hostnames (populated by target_parser when --krb-dc-only is used)
@@ -228,11 +229,17 @@ Examples:
     # Performance options
     perf_group = parser.add_argument_group('Performance')
     perf_group.add_argument('--threads', type=int, default=10,
-                           help='Number of threads (default: 10)')
+                           help='Number of threads for all operations (default: 10)')
+    perf_group.add_argument('--http-threads', type=int, default=None,
+                           help='Override thread count for HTTP/HTTPS path enumeration (default: same as --threads)')
     perf_group.add_argument('--timeout', type=int, default=5,
                            help='Connection timeout in seconds (default: 5)')
 
     args = parser.parse_args()
+
+    # If --http-threads not specified, inherit from --threads
+    if args.http_threads is None:
+        args.http_threads = args.threads
 
     # Validate arguments
     if not args.null_auth:
@@ -322,6 +329,7 @@ Examples:
         gen_relay_list=args.gen_relay_list,
         verbose=args.verbose,
         threads=args.threads,
+        http_threads=args.http_threads,
         timeout=args.timeout
     )
 
